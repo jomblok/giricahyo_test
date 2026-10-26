@@ -21,4 +21,15 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-"cloudflared.exe" 
+# Tanda kutip SENGAJA dibuang. Git tidak menafsirkan kutip di .gitignore:
+# pola "cloudflared.exe" mencari berkas yang namanya benar-benar memuat
+# tanda kutip, jadi binari 51,7 MB-nya selama ini TIDAK pernah diabaikan
+# (terbukti lewat git check-ignore) dan akan ikut masuk riwayat git — tempat
+# yang tidak bisa dibersihkan lagi dengan mudah.
+cloudflared.exe
+
+# Composer sendiri, 3,4 MB. Berkasnya tetap ada di disk — proyek ini
+# memakainya karena composer tidak terpasang global — tapi tidak perlu ikut
+# masuk riwayat git, tempat yang tidak bisa dibersihkan lagi dengan mudah.
+# Salinan barunya: https://getcomposer.org/download/
+composer.phar
