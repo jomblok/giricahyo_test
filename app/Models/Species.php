@@ -2,6 +2,6 @@
 use Illuminate\Database\Eloquent\Model;
 
 class Species extends Model {
-    protected $fillable = ['name', 'density_rho'];
+    protected $fillable = ['name', 'scientific_name', 'density_rho', 'density_source', 'density_reference'];
     protected $casts    = ['density_rho' => 'float'];
 }

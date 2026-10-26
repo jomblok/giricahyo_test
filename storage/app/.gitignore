@@ -2,3 +2,46 @@
 !private/
 !public/
 !.gitignore
+
+# Cadangan basis data — dua perlakuan berbeda, sengaja.
+#
+# Folder backups/ sendiri diizinkan supaya aturan di bawah bisa berlaku; baris
+# "*" di atas memblokir seluruh isinya kalau foldernya tidak dibuka dulu.
+!backups/
+backups/*
+
+# Dump .sql TETAP diabaikan: ia memuat hash kata sandi SELURUH akun, dan
+# repositori ini publik. Hash bcrypt dari kata sandi lemah bisa dipecahkan
+# dalam hitungan menit, jadi mengunggahnya sama dengan membocorkan akunnya.
+
+# Ekspor CSV DIIZINKAN, dan itu disengaja. Tidak ada akun, kata sandi,
+# sertifikat, atau gaji di dalamnya. Dan karena 179 pohon hasil survei lapangan
+# TIDAK bisa dihasilkan ulang dari berkas Excel yang tersedia, menyimpannya di
+# sini membuat GitHub berfungsi sebagai cadangan di luar mesin ini. CSV juga
+# terbaca diff git, jadi perubahan data lapangan terlihat di riwayat versi.
+#
+# TAPI BUKAN "HANYA DATA POHON" — dan catatan ini dulu salah menyebutnya begitu.
+# Setiap baris memuat kolom nama_petani BERSAMA latitude/longitude pohonnya:
+# nama seseorang dipasangkan dengan letak lahannya. Itu data pribadi.
+#
+# Hari ini aman karena namanya masih placeholder ("Petani Lokasi 1",
+# "Kelompok 3"), dan repositori ini PUBLIK. Begitu nama asli petani dimasukkan,
+# cadangan berikutnya akan menerbitkan nama + koordinat lahan mereka ke siapa
+# pun di internet — dan riwayat git tidak bisa dihapus dengan sekadar menghapus
+# berkasnya. Sebelum itu terjadi, pilih salah satu: jadikan repositori privat,
+# hilangkan kolom nama_petani dari ekspor (id_petani sudah cukup untuk
+# memulihkan relasi), atau berhenti mengizinkan baris ini.
+!backups/*.csv
+
+# Log audit impor survei — DIIZINKAN masuk git.
+#
+# Berkas ini satu-satunya catatan asal-usul 179 pohon: untuk setiap pohon ia
+# menyimpan sheet dan nomor baris asalnya, nilai mentah yang dibaca, serta CO2
+# hasil hitung aplikasi BERDAMPINGAN dengan angka asli tim lapangan. Ia juga
+# yang menjelaskan kenapa 8 baris di lokasi 2 tidak terimpor.
+#
+# Isinya murni data pohon — tidak ada akun, kata sandi, atau hash — jadi aman
+# di repositori publik. Dan ia TIDAK ikut `db:backup` (yang hanya mendump basis
+# data), jadi tanpa baris ini berkasnya hanya ada di satu disk dan hilang
+# bersamanya.
+!tree-survey-import-log.csv

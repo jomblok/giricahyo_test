@@ -7,7 +7,11 @@ class Buyer extends Model
     protected $primaryKey = 'id';
     public    $incrementing = false;
     protected $keyType    = 'string';
-    protected $fillable   = ['id', 'name', 'email', 'phone'];
+    protected $fillable   = ['id', 'name', 'email', 'phone', 'share_token'];
+
+    // Token berbagi TIDAK pernah ikut terserialisasi secara tidak sengaja.
+    // Ia setara kunci: siapa pun yang memilikinya bisa membuka halaman dampak.
+    protected $hidden = ['share_token'];
 
     public function adoptions(): HasMany
     {

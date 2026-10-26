@@ -46,6 +46,48 @@ class DashboardController extends Controller
                                     ->groupBy('health_status')
                                     ->pluck('count', 'health_status'),
             'top_farmers'    => $topFarmers,
+
+            // Rincian per jenis, untuk barisan kartu jenis.
+            //
+            // DIHITUNG DI SINI, beda dengan halaman petani yang merangkumnya
+            // di peramban (lihat lib/ringkasJenis.js). Perbedaannya bukan
+            // selera: halaman petani SUDAH memuat seluruh pohon miliknya,
+            // sedangkan dashboard ini hanya memuat ringkasan — daftar pohonnya
+            // ditarik terpisah oleh tabelnya sendiri. Merangkum di peramban
+            // berarti menarik seluruh 179 pohon untuk kedua kalinya hanya demi
+            // beberapa angka.
+            //
+            // leftJoin, bukan join: pohon yang jenisnya belum terdaftar di
+            // katalog tetap terhitung. Kalau tidak, jumlah di kartu diam-diam
+            // berbeda dari total_trees di atas — dan selisih tanpa sebab yang
+            // terlihat adalah hal tersulit untuk dilacak.
+            //
+            // TANPA BATAS JUMLAH. Dulu dipotong 8 teratas dengan alasan
+            // "tidak ada yang menggulir sejauh itu". Alasan itu keliru: dari
+            // 19 jenis yang punya pohon, 11 di antaranya hilang tanpa jejak.
+            // Pengurus membaca barisan kartu sebagai rincian dari angka 179
+            // di atasnya, dan rincian yang diam-diam terpotong membuat
+            // jumlahnya tidak pernah bisa dicocokkan.
+            //
+            // Kalau suatu saat jenisnya terlalu banyak untuk digulir dengan
+            // nyaman, jawabannya adalah mengubah cara menampilkannya —
+            // bukan menyembunyikan sebagiannya tanpa memberi tahu.
+            'by_species'     => Tree::selectRaw(
+                                        'trees.species,
+                                         MAX(species.scientific_name) as latin,
+                                         COUNT(*)                     as jumlah,
+                                         SUM(trees.co2_eq_kg)         as co2'
+                                    )
+                                    ->leftJoin('species', 'species.name', '=', 'trees.species')
+                                    ->groupBy('trees.species')
+                                    ->orderByDesc('jumlah')
+                                    ->get()
+                                    ->map(fn ($r) => [
+                                        'nama'   => $r->species,
+                                        'latin'  => $r->latin,
+                                        'jumlah' => (int) $r->jumlah,
+                                        'co2'    => round((float) $r->co2, 2),
+                                    ]),
         ]);
     }
 

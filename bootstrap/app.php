@@ -17,6 +17,16 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
+        // Header keamanan pada SEMUA respons /api. Sebelumnya tidak ada satu
+        // pun — lihat alasan tiap header di App\Http\Middleware\SecurityHeaders.
+        $middleware->api(append: [
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
+
+        // Batas laju untuk semua route /api (limiter 'api' didefinisikan di
+        // AppServiceProvider). Laravel 11 tidak memasang ini sendiri.
+        $middleware->throttleApi();
+
         // Alias middleware untuk JWT
         $middleware->alias([
             'jwt' => \App\Http\Middleware\JwtMiddleware::class,
