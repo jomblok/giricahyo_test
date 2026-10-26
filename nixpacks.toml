@@ -1,8 +1,39 @@
+# Konfigurasi build Railway (Nixpacks).
+#
+# EKSTENSI PHP mengikuti composer.lock, bukan tebakan. phpoffice/phpspreadsheet
+# (impor/ekspor survei Excel) membutuhkan gd, dom, fileinfo, iconv, simplexml,
+# xmlreader, xmlwriter, dan ctype. Tanpa itu `composer install` berhenti dengan
+# "requires ext-gd * -> it is missing from your system" dan build gagal — itulah
+# yang terjadi saat paket ini pertama kali masuk.
+
 [phases.setup]
-nixPkgs = ["php82", "php82Extensions.pdo_mysql", "php82Extensions.mbstring", "php82Extensions.xml", "php82Extensions.tokenizer", "php82Extensions.zip", "php82Extensions.bcmath", "composer"]
+nixPkgs = [
+  "php82",
+  "php82Extensions.pdo_mysql",
+  "php82Extensions.mbstring",
+  "php82Extensions.xml",
+  "php82Extensions.tokenizer",
+  "php82Extensions.zip",
+  "php82Extensions.bcmath",
+  "php82Extensions.gd",
+  "php82Extensions.dom",
+  "php82Extensions.fileinfo",
+  "php82Extensions.iconv",
+  "php82Extensions.simplexml",
+  "php82Extensions.xmlreader",
+  "php82Extensions.xmlwriter",
+  "php82Extensions.ctype",
+  "composer",
+]
 
 [phases.build]
 cmds = ["composer install --no-dev --optimize-autoloader"]
 
+# TANPA db:seed. Dulu perintah ini menjalankan seeder di SETIAP start. Seeder
+# memakai ID tetap, jadi pada basis data yang sudah berisi ia gagal dengan
+# "Duplicate entry" — dan karena dirangkai dengan &&, server tidak pernah
+# menyala sesudahnya. Seeder juga membuat akun demo yang kata sandinya
+# tercantum di repositori publik ini; itu tidak boleh terjadi di produksi.
+# Kalau basis data produksi masih kosong, jalankan seeder SEKALI secara manual.
 [start]
-cmd = "php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
