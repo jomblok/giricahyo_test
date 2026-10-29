@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // CORS — izinkan request dari frontend React
         $middleware->api(prepend: [
             \Illuminate\Http\Middleware\HandleCors::class,
+            // Di depan middleware lain (hanya setelah CORS) supaya angka
+            // "total"-nya mencakup pembatas laju yang membaca cache.
+            \App\Http\Middleware\ServerTiming::class,
         ]);
 
         // Header keamanan pada SEMUA respons /api. Sebelumnya tidak ada satu

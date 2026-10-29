@@ -41,6 +41,12 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
+    // Header Server-Timing (lihat App\Http\Middleware\ServerTiming). Dibaca
+    // lewat config, bukan env() langsung di middleware: Railpack menjalankan
+    // `optimize` saat start, dan setelah config di-cache env() di luar berkas
+    // config selalu mengembalikan null.
+    'server_timing' => (bool) env('SERVER_TIMING', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application URL
